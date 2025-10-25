@@ -1,0 +1,119 @@
+{% extends "app_autores/base.html" %}
+{% block body %}
+<h3 class="m-4"><i class="fa-solid fa-users"></i> Lista de Autores</h3>
+<div class="row">
+    <div class="col-12">
+        {% if autores %}
+        <div class="card bg-light ms-4 me-4 mb-4">
+            <div class="card-header"><i class="fa-solid fa-list"></i> Todos los Autores</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-primary">
+                            <tr>
+                                <th><i class="fa-solid fa-id-badge"></i> ID</th>
+                                <th><i class="fa-solid fa-user"></i> Nombre</th>
+                                <th><i class="fa-solid fa-user"></i> Apellido</th>
+                                <th><i class="fa-solid fa-globe"></i> Nacionalidad</th>
+                                <th><i class="fa-solid fa-calendar"></i> Nacimiento</th>
+                                <th><i class="fa-solid fa-book"></i> Bibliografía</th>
+                                <th><i class="fa-solid fa-link"></i> Página Web</th>
+                                <th><i class="fa-solid fa-gear"></i> Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for autor in autores %}
+                            <tr>
+                                <td>{{ autor.autor_id }}</td>
+                                <td>{{ autor.nombre }}</td>
+                                <td>{{ autor.apellido }}</td>
+                                <td><span class="badge bg-info text-dark">{{ autor.nacionalidad }}</span></td>
+                                <td>{{ autor.fecha_nacimiento }}</td>
+                                <td>{{ autor.bibliografia|truncatewords:10 }}</td>
+                                <td>
+                                    {% if autor.pagina_web %}
+                                    <a href="{{ autor.pagina_web }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa-solid fa-link"></i> Ver
+                                    </a>
+                                    {% else %}
+                                    <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <!-- Modal Ver -->
+                                    <button type="button" class="btn btn-success btn-sm me-1" data-bs-toggle="modal" data-bs-target="#myModal{{ autor.autor_id }}">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                    </button>
+                                    <div class="modal fade" id="myModal{{ autor.autor_id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-success text-white">
+                                                    <h5 class="modal-title">Detalles del Autor</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <ul class="list-unstyled">
+                                                        <li><strong>ID:</strong> {{ autor.autor_id }}</li>
+                                                        <li><strong>Nombre:</strong> {{ autor.nombre }}</li>
+                                                        <li><strong>Apellido:</strong> {{ autor.apellido }}</li>
+                                                        <li><strong>Nacionalidad:</strong> {{ autor.nacionalidad }}</li>
+                                                        <li><strong>Fecha de Nacimiento:</strong> {{ autor.fecha_nacimiento }}</li>
+                                                        <li><strong>Bibliografía:</strong> {{ autor.bibliografia }}</li>
+                                                        <li><strong>Página Web:</strong>
+                                                            {% if autor.pagina_web %}
+                                                            <a href="{{ autor.pagina_web }}" target="_blank">{{ autor.pagina_web }}</a>
+                                                            {% else %}N/A{% endif %}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Editar -->
+                                    <a class="btn btn-warning btn-sm me-1" href="{% url 'edit' autor.autor_id %}">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+
+                                    <!-- Eliminar -->
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#delete{{ autor.autor_id }}">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                    <div class="modal fade" id="delete{{ autor.autor_id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-danger text-white">
+                                                    <h5 class="modal-title">Eliminar: {{ autor.nombre }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>¿Estás seguro de que quieres eliminar este autor?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <form action="{% url 'delete' autor.autor_id %}" method="POST">
+                                                        {% csrf_token %}
+                                                        <input type="submit" class="btn btn-danger" value="Eliminar">
+                                                    </form>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <h5 class="alert alert-primary ms-4 me-4">No hay autores registrados</h5>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
